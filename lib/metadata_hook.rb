@@ -13,7 +13,7 @@ class RMetadataHook < Mumukit::Hook
          test_extension: '.R',
          template: <<R
 test_that("{{ test_template_sample_description }}", {
-  expect_that( TRUE, is_true() )
+  expect_true( TRUE )
 })
 R
      }}

@@ -6,16 +6,16 @@ describe RTryHook do
   let(:file) { hook.compile(request) }
   let(:result) { hook.run!(file) }
 
-  let(:goal) { { kind: 'query_outputs', query: '"goal :)"', output: '"goal :)"' } }
+  let(:goal) { { kind: 'query_outputs', query: '"goal :)"', output: '[1] "goal :)"' } }
 
   context 'with a dummy goal' do
     let(:request) { struct query: '"asd"', goal: goal }
-    it { expect(result[2][:result]).to eq '"asd"' }
+    it { expect(result[2][:result]).to eq '[1] "asd"' }
     it { expect(result[1]).to eq :passed }
   end
 
   context 'try with last_query_equals goal' do
-    let(:goal) { { kind: 'last_query_equals', value: '"something"' } }
+    let(:goal) { { kind: 'last_query_equals', value: '[1] "something"' } }
 
     context 'and query that matches' do
       let(:request) { struct query: '"something"', goal: goal }
@@ -29,21 +29,21 @@ describe RTryHook do
   end
 
   context 'try with last_query_matches goal' do
-    let(:goal) { { kind: 'last_query_matches', regexp: /console\.log(.*)/ } }
+    let(:goal) { { kind: 'last_query_matches', regexp: /print(.*)/ } }
 
     context 'and query that matches' do
-      let(:request) { struct query: 'console.log("hola")', goal: goal }
+      let(:request) { struct query: 'print(3)', goal: goal }
       it { expect(result[1]).to eq :passed }
     end
 
     context 'and query that does not match' do
-      let(:request) { struct query: 'var a = 2', goal: goal }
+      let(:request) { struct query: 'abs(2)', goal: goal }
       it { expect(result[1]).to eq :failed }
     end
   end
 
   context 'try with last_query_outputs goal' do
-    let(:goal) { { kind: 'last_query_outputs', output: '3' } }
+    let(:goal) { { kind: 'last_query_outputs', output: '[1] 3' } }
 
     context 'and query with said output' do
       let(:request) { struct query: '1 + 2', goal: goal }
@@ -57,10 +57,10 @@ describe RTryHook do
   end
 
   context 'try with query_fails goal' do
-    let(:goal) { { kind: 'query_fails', query: 'asd' } }
+    let(:goal) { { kind: 'query_fails', query: 'my_var' } }
 
     context 'and query that makes said query pass' do
-      let(:request) { struct query: 'let asd = 2;', goal: goal }
+      let(:request) { struct query: 'my_var <- 2;', goal: goal }
       it { expect(result[1]).to eq :failed }
     end
 
@@ -71,10 +71,10 @@ describe RTryHook do
   end
 
   context 'try with query_passes goal' do
-    let(:goal) { { kind: 'query_passes', query: 'asd' } }
+    let(:goal) { { kind: 'query_passes', query: 'my_var' } }
 
     context 'and query that makes said query pass' do
-      let(:request) { struct query: 'let asd = 2;', goal: goal }
+      let(:request) { struct query: 'my_var <- 2;', goal: goal }
       it { expect(result[1]).to eq :passed }
     end
 
@@ -85,15 +85,15 @@ describe RTryHook do
   end
 
   context 'try with query_outputs goal' do
-    let(:goal) { { kind: 'query_outputs', query: 'asd', output: '55' } }
+    let(:goal) { { kind: 'query_outputs', query: 'my_var', output: '55' } }
 
     context 'and query that generates said output' do
-      let(:request) { struct query: 'let asd = 55;', goal: goal }
+      let(:request) { struct query: 'my_var <- 55;', goal: goal }
       it { expect(result[1]).to eq :passed }
     end
 
     context 'and query that does not generate said output' do
-      let(:request) { struct query: 'let asd = 28', goal: goal }
+      let(:request) { struct query: 'my_var <- 28', goal: goal }
       it { expect(result[1]).to eq :failed }
     end
   end

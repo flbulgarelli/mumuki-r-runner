@@ -4,89 +4,41 @@ describe 'running' do
 
   let(:runner) { RTestHook.new }
 
-  let(:file) { runner.compile(OpenStruct.new(content: content, test: test, extra: extra)) }
+  let(:file) { runner.compile(struct content: content, test: test, extra: extra) }
   let(:raw_results) { runner.run!(file) }
   let(:results) { raw_results[0] }
 
   let(:extra) { '' }
+  let(:content) { '' }
 
-  let(:content) do
-    <<R
-  const _true = true;
+  context 'on simple passed file' do
+    let(:test) do
+<<R
+test_that("true is true", { expect_true( TRUE ) })
 R
+    end
+
+    it { expect(results).to eq([['true is true', :passed, '']]) }
   end
 
-  describe '#run!' do
-    context 'on simple passed file' do
-      let(:test) do
-        <<R
-  describe('_true', () => {
-      it('is true', () => assert.equal(_true, true));
-  });
-R
-      end
-
-      it { expect(results).to eq([['_true is true', :passed, '']]) }
-    end
-
-    context 'on simple failed file' do
-      let(:test) do
-        <<R
-  describe('_true', () => {
-    it('is is something that will fail', () => assert.equal(_true, 3));
-  });
-R
-      end
-
-      it { expect(results).to(
-          eq([['_true is is something that will fail', :failed, 'true == 3']])) }
-    end
-
-    context 'on multi file' do
-      let(:test) do
-        <<R
-  describe('_true', function() {
-    it('is true', function() {
-      assert.equal(_true, true)
-    });
-    it('is not _false', function() {
-      assert.notEqual(_true, false)
-    });
-    it('is is something that will fail', function() {
-      assert.equal(_true, 3)
-    });
-  });
-R
-end
-
-      it { expect(results).to(
-          eq([['_true is true', :passed, ''],
-              ['_true is not _false', :passed, ''],
-              ['_true is is something that will fail', :failed, 'true == 3']])) }
-    end
-
-    context 'when content contains a logging operation' do
-      let(:content) do
+  context 'on simple failed file' do
+    let(:test) do
 <<R
-function a(){
-  console.log('An output.')
-  return 3
-}
+test_that("true is true", { expect_true( FALSE ) })
 R
-      end
-
-      let(:test) do
-<<R
-describe('a()', function() {
-  it('returns 3', function() {
-    assert.equal(3, a())
-  });
-});
-R
-      end
-
-      it { expect(results).to(
-          eq([['a() returns 3', :passed, '']])) }
     end
+
+    it { expect(results).to eq([['true is true', :failed, "FALSE isn't true."]]) }
+  end
+
+  context 'on multiple tests' do
+    let(:test) do
+<<R
+test_that("true is true", { expect_true( TRUE ) })
+test_that("false is true", { expect_true( FALSE ) })
+R
+    end
+
+    it { expect(results).to eq([['true is true', :passed, ''], ['false is true', :failed, "FALSE isn't true."]]) }
   end
 end

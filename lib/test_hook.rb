@@ -1,5 +1,6 @@
 class RTestHook < Mumukit::Templates::FileHook
   isolated true
+  structured true
 
   def compile_file_content(request)
 <<R
@@ -14,6 +15,23 @@ R
   end
 
   def command_line(filename)
-    %Q{R -e 'testthat:test_file("#{filename}")'} #TODO use JunitReporter 
+    %Q{R -q -e testthat::test_file('#{filename}',reporter='junit')} #TODO use
+  end
+
+
+  def to_structured_result(result)
+    clean_xml = result.gsub(/^>.+$/, '')
+    transform(Nokogiri::XML(clean_xml).xpath('//testcase'))
+  end
+
+  def transform(examples)
+    examples.map do |it|
+      failure = it.at('failure')
+      if failure
+        [it['name'].gsub('_', ' '), :failed, failure.content]
+      else
+        [it['name'].gsub('_', ' '), :passed, '']
+      end
+    end
   end
 end

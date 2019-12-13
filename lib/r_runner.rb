@@ -1,4 +1,5 @@
 require 'mumukit'
+require 'nokogiri'
 
 Mumukit.runner_name = 'r'
 Mumukit.configure do |config|
