@@ -13,7 +13,7 @@ describe 'runner' do
   it 'answers a valid hash when submission is ok' do
     response = bridge.run_tests!(test: 'test_that("a_variable is 3", { expect_equal(a_variable, 3) })',
                                  extra: '',
-                                 content: 'aVariable <- 3',
+                                 content: 'a_variable <- 3',
                                  expectations: [])
 
     expect(response).to eq(response_type: :structured,
@@ -28,12 +28,12 @@ describe 'runner' do
   it 'answers a valid hash when submission is not ok' do
     response = bridge.run_tests!(test: 'test_that("a_variable is 3", { expect_equal(a_variable, 3) })',
                                  extra: '',
-                                 content: 'aVariable <- 4',
+                                 content: 'a_variable <- 4',
                                  expectations: [])
 
     expect(response).to eq(response_type: :structured,
-                           test_results: [{title: 'a variable is 3', status: :failed, result: '3 != 4'}],
-                           status: :passed,
+                           test_results: [{title: 'a variable is 3', status: :failed, result: "`a_variable` not equal to 3.\n1/1 mismatches\n[1] 4 - 3 == 1"}],
+                           status: :failed,
                            feedback: '',
                            expectation_results: [],
                            result: '')
