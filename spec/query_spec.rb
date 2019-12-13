@@ -31,12 +31,12 @@ describe RQueryHook do
 
     context 'function query' do
       let(:request) { struct(query: 'function(x) { return (x+1) }') }
-      it { expect(result[0]).to eq 'function(x) { return (x+1) }' }
+      it { expect(result[0]).to eq "function (x) \n{\n    return(x + 1)\n}\n" }
     end
   end
 
   describe 'declarations' do
-    context 'with let' do
+    context 'with <-' do
       let(:request) { struct(query: 'x <- 3') }
       it { expect(result[0]).to eq "[1] 3\n" }
     end
@@ -54,7 +54,7 @@ describe RQueryHook do
     end
 
     context 'with failing cookie' do
-      let(:request) { struct(query: 'x', cookie: ['assssfdsfds', 'x <- 1'], content: 'x <- 4') }
+      let(:request) { struct(query: 'x', cookie: ['assssfdsfds', 'x <- x + 1'], content: 'x <- 4') }
       it { expect(result[0]).to eq "[1] 5\n" }
     end
   end
@@ -83,17 +83,15 @@ SyntaxError: Unexpected token ;} }
 
     context 'with unclosed curly braces' do
       let(:request) { struct(query: 'function () {') }
-      it { expect(result[0]).to eq %q`});
- ^
-
-SyntaxError: Unexpected token )` }
+      it { expect(result[0]).to include 'unexpected end of input'  }
+      it { expect(result[0]).to_not include '__mumuki_query_result__' }
       it { expect(result[1]).to eq :errored }
     end
   end
 
   context 'query with unknown reference' do
     let(:request) { struct(query: 'someFunction(23)') }
-    it { expect(result[0]).to include 'ReferenceError' }
+    it { expect(result[0]).to include 'could not find function' }
     it { expect(result[0]).to_not include '__mumuki_query_result__' }
     it { expect(result[1]).to eq :errored }
   end

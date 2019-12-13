@@ -37,7 +37,7 @@ R
   private
 
   def compile_statements(cookie)
-    cookie.map { |query| "try { #{query} } catch (e) {}" }
+    cookie.map { |query| "invisible(tryCatch({ #{query} }, error = function(e) {}))" }
   end
 
   def error_patterns
