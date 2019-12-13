@@ -20,8 +20,8 @@ class RQueryHook < Mumukit::Templates::FileHook
 R
   end
 
-  def compile_query(query, output_var = "mumuki__query__result")
-    "#{output_var} <- #{query};\nprint(#{output_var})"
+  def compile_query(query)
+    query
   end
 
   def compile_cookie(cookie)
@@ -42,15 +42,7 @@ R
 
   def error_patterns
     [
-      Mumukit::ErrorPattern::Errored.new(error_regexp)
+      Mumukit::ErrorPattern::Errored.new(/(?=Execution halted\n$)/)
     ]
-  end
-
-  def error_types
-    '(Reference|Syntax|Type)Error'
-  end
-
-  def error_regexp
-    /(?=\X*#{error_types})(solution.*\n|var mumuki__query__result = )|#{error_types}.*\n\K\X*/
   end
 end

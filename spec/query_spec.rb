@@ -38,7 +38,7 @@ describe RQueryHook do
   describe 'declarations' do
     context 'with <-' do
       let(:request) { struct(query: 'x <- 3') }
-      it { expect(result[0]).to eq "[1] 3\n" }
+      it { expect(result[0]).to eq "" }
     end
   end
 
@@ -73,26 +73,21 @@ describe RQueryHook do
 
   context 'query with syntax errors' do
     context 'with invalid token' do
-      let(:request) { struct(query: '!') }
-      it { expect(result[0]).to eq %q{!;
-                               ^
-
-SyntaxError: Unexpected token ;} }
+      let(:request) { struct(query: '**') }
+      it { expect(result[0]).to eq "Error: unexpected '^' in \"**\"\nExecution halted" }
       it { expect(result[1]).to eq :errored }
     end
 
     context 'with unclosed curly braces' do
       let(:request) { struct(query: 'function () {') }
-      it { expect(result[0]).to include 'unexpected end of input'  }
-      it { expect(result[0]).to_not include '__mumuki_query_result__' }
+      it { expect(result[0]).to eq "Error: unexpected end of input\nExecution halted"  }
       it { expect(result[1]).to eq :errored }
     end
   end
 
   context 'query with unknown reference' do
     let(:request) { struct(query: 'someFunction(23)') }
-    it { expect(result[0]).to include 'could not find function' }
-    it { expect(result[0]).to_not include '__mumuki_query_result__' }
+    it { expect(result[0]).to eq "Error in someFunction(23) : could not find function \"someFunction\"\nExecution halted" }
     it { expect(result[1]).to eq :errored }
   end
 end

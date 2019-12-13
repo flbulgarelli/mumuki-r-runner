@@ -10,10 +10,10 @@ class RTryHook < Mumukit::Templates::TryHook
   def compile_file_content(r)
     <<R
 #{@query_hook.compile_file_header(r)}
-print("#{query_separator}");
+cat("#{query_separator}", fill = TRUE);
 #{@query_hook.compile_query(r.query)}
-print("#{goal_separator}");
-#{@query_hook.compile_query(r.goal.with_indifferent_access[:query] || 'null', 'mumuki__goal__query__result')}
+cat("#{goal_separator}", fill = TRUE);
+#{@query_hook.compile_query(r.goal.with_indifferent_access[:query] || 'NULL')}
 R
   end
 
@@ -34,7 +34,6 @@ R
 #{goal_separator}
 ?(.*)
 /m =~ result
-
     {
         query: to_query_result($1, status),
         goal: $2,

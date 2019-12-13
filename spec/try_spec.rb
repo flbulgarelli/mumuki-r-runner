@@ -15,7 +15,7 @@ describe RTryHook do
   end
 
   context 'try with last_query_equals goal' do
-    let(:goal) { { kind: 'last_query_equals', value: '[1] "something"' } }
+    let(:goal) { { kind: 'last_query_equals', value: '"something"' } }
 
     context 'and query that matches' do
       let(:request) { struct query: '"something"', goal: goal }
@@ -85,7 +85,7 @@ describe RTryHook do
   end
 
   context 'try with query_outputs goal' do
-    let(:goal) { { kind: 'query_outputs', query: 'my_var', output: '55' } }
+    let(:goal) { { kind: 'query_outputs', query: 'my_var', output: '[1] 55' } }
 
     context 'and query that generates said output' do
       let(:request) { struct query: 'my_var <- 55;', goal: goal }

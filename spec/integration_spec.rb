@@ -17,7 +17,7 @@ describe 'runner' do
                                  expectations: [])
 
     expect(response).to eq(response_type: :structured,
-                           test_results: [{title: 'a_variable is 3', status: :passed, result: ''}],
+                           test_results: [{title: 'a variable is 3', status: :passed, result: ''}],
                            status: :passed,
                            feedback: '',
                            expectation_results: [],
@@ -32,7 +32,7 @@ describe 'runner' do
                                  expectations: [])
 
     expect(response).to eq(response_type: :structured,
-                           test_results: [{title: 'a_variable is 3', status: :failed, result: '3 != 4'}],
+                           test_results: [{title: 'a variable is 3', status: :failed, result: '3 != 4'}],
                            status: :passed,
                            feedback: '',
                            expectation_results: [],
@@ -41,7 +41,7 @@ describe 'runner' do
 
 
   it 'answers a valid hash when submission has compilation errors' do
-    response = bridge.run_tests!(test: 'test_that("a_variable is 3", { expect_equal(a_variable, 3) })',
+    response = bridge.run_tests!(test: 'test_that("a variable is 3", { expect_equal(a_variable, 3) })',
                                  extra: '',
                                  content: 'm -< 4',
                                  expectations: [])
@@ -51,6 +51,6 @@ describe 'runner' do
                            status: :errored,
                            feedback: '',
                            expectation_results: [],
-                           result: 'Error: unexpected '<' in "m -<"')
+                           result: "Error: unexpected '<' in \"m -<\"")
   end
 end
