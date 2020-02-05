@@ -53,4 +53,18 @@ describe 'runner' do
                            expectation_results: [],
                            result: "> testthat::test_file('solution.R',reporter='junit')\nError in parse(con, n = -1, srcfile = srcfile, encoding = \"UTF-8\") : \n  solution.R:2:4: unexpected '<'\n1: \n2: m -<\n      ^\nCalls: <Anonymous> ... withOneRestart -> doWithOneRestart -> force -> source_file -> parse\nExecution halted\n")
   end
+
+  it 'answers a valid hash when declaration is not found' do
+    response = bridge.run_tests!(test: 'test_that("succ of 1 is 2", { expect_equal(succ(1), 2) })',
+                                 extra: '',
+                                 content: '',
+                                 expectations: [])
+
+    expect(response).to eq(response_type: :structured,
+                           test_results: [{title: 'succ of 1 is 2', status: :failed, result: %Q{could not find function "succ"\nBacktrace:\n 1. testthat::expect_equal(succ(1), 2) solution.R:3:30\n 2. testthat::quasi_label(enquo(object), label, arg = "object")\n 3. rlang::eval_bare(expr, quo_get_env(quo))}}],
+                           status: :failed,
+                           feedback: '',
+                           expectation_results: [],
+                           result: '')
+  end
 end
