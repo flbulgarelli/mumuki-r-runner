@@ -33,12 +33,16 @@ R
 
   def transform(examples)
     examples.map do |it|
-      failure = it.at('failure')
+      failure = it.at('failure', 'error')
       if failure
         [it['name'].gsub('_', ' '), :failed, failure.content]
       else
         [it['name'].gsub('_', ' '), :passed, '']
       end
     end
+  end
+
+  def cleanup_raw_result(result)
+    super(result.gsub 'tmpmumuki', '/tmp/mumuki')
   end
 end
