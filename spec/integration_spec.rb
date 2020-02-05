@@ -51,6 +51,6 @@ describe 'runner' do
                            status: :errored,
                            feedback: '',
                            expectation_results: [],
-                           result: "Error: unexpected '<' in \"m -<\"")
+                           result: "> testthat::test_file('solution.R',reporter='junit')\nError in parse(con, n = -1, srcfile = srcfile, encoding = \"UTF-8\") : \n  solution.R:2:4: unexpected '<'\n1: \n2: m -<\n      ^\nCalls: <Anonymous> ... withOneRestart -> doWithOneRestart -> force -> source_file -> parse\nExecution halted\n")
   end
 end
