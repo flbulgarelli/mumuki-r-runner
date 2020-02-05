@@ -18,6 +18,13 @@ R
     %Q{R -q -e testthat::test_file('#{filename}',reporter='junit')} #TODO use
   end
 
+  def post_process_file(file, result, status)
+    if status.failed?
+      [result, :errored]
+    else
+      super
+    end
+  end
 
   def to_structured_result(result)
     clean_xml = result.gsub(/^>.+$/, '')
